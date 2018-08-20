@@ -3,28 +3,34 @@ const express = require('express');
 // get the object router
 const router = express.Router();
 // get the object of ninja model
-const Ninja = require('../models/ninja');
+const PointSchema = require('../models/point');
+// get the object of monggosedb
+const mongoose = require('mongoose');
 
-// get response
-router.get('/ninjas', function(req, res, next){
-	Ninja.aggregate().near({
-      near: { type: "Point", coordinates: [parseFloat(req.query.lng) , parseFloat(req.query.lat)] },
-                  distanceField: "dist.calculated",
-                  maxDistance: 100000,
-                  spherical: true
-      }).then(function(ninjas){
-          res.send(ninjas);
-      }).catch(next);
+//delete response
+router.get('/points', function(req, res, next){
+
+	var Point = set_db_point_name(req.query.id);
+	var limit = parseInt(req.query.limit);
+
+
+	Point.find().limit(limit).then(function(ninja){
+                res.send(ninja);
+        }).catch(next);
 });
 
 // post response
-router.post('/ninjas', function(req, res, next){
+router.post('/point', function(req, res, next){
+
+	var Point = set_db_point_name(req.body.id);
 
 	// saving the request, then return the result
-	Ninja.create(req.body).then(function(ninja){		
-		res.send(ninja);
+	Point.create(req.body).then(function(point){		
+		res.send(point);
 	}).catch(next);
+
 });
+
 
 // put response
 router.put('/ninjas/:id', function(req, res, next){
@@ -43,6 +49,11 @@ router.delete('/ninjas/:id', function(req, res, next){
 		res.send(ninja);
 	}).catch(next);
 });
+
+function set_db_point_name(table_id){
+	// creating document object named ninja with NinjaSchema
+ 	return mongoose.model('tbl_point_' + table_id , PointSchema);
+}
 
 // store the response setting
 module.exports=router;
