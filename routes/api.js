@@ -7,19 +7,19 @@ const PointSchema = require('../models/point');
 // get the object of monggosedb
 const mongoose = require('mongoose');
 
-//delete response
+// get latest points
 router.get('/points', function(req, res, next){
 
 	var Point = set_db_point_name(req.query.id);
 	var limit = parseInt(req.query.limit);
 
 
-	Point.find().limit(limit).then(function(ninja){
+	Point.find().sort({'_id': -1}).limit(limit).then(function(ninja){
                 res.send(ninja);
         }).catch(next);
 });
 
-// post response
+// post new point data
 router.post('/point', function(req, res, next){
 
 	var Point = set_db_point_name(req.body.id);
