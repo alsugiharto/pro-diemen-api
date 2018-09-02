@@ -12,9 +12,27 @@ const PointSchema = new Schema({
 			message: 'value is not an integer value' 
 		}
 	},
-	time:{
+	date_complete:{
 		type: Date,
 		default: Date.now
+	},
+	date_year:{
+		type: Number
+	},
+	date_month:{
+		type: Number
+	},
+	date_day:{
+		type: Number
+	},
+	date_hour:{
+		type: Number
+	},
+	date_minute:{
+		type: Number
+	},
+	date_second:{
+		type: Number
 	}
 });
 
