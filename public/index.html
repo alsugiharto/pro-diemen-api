@@ -1,0 +1,166 @@
+<!-- Styles -->
+<style>
+    #chartdiv {
+    width	: 100%;
+    height	: 500px;
+    }																	
+</style>
+
+<!-- Resources -->
+<script src="https://code.jquery.com/jquery-3.1.1.min.js"></script>
+<script src="https://www.amcharts.com/lib/3/amcharts.js"></script>
+<script src="https://www.amcharts.com/lib/3/serial.js"></script>
+<script src="https://www.amcharts.com/lib/3/plugins/export/export.min.js"></script>
+<link rel="stylesheet" href="https://www.amcharts.com/lib/3/plugins/export/export.css" type="text/css" media="all" />
+<script src="https://www.amcharts.com/lib/3/themes/light.js"></script>
+
+<script src="https://unpkg.com/react@15/dist/react.min.js"> </script>
+<script src="https://unpkg.com/react-dom@15/dist/react-dom.min.js"></script>
+<script src="https://unpkg.com/babel-standalone@6.15.0/babel.min.js"></script>
+
+<!-- Chart code -->
+<script>
+var chartData = generateChartData();
+    chartData[0].visits = 200;
+
+var chart = AmCharts.makeChart("chartdiv", {
+    "type": "serial",
+    "theme": "light",
+    "marginRight": 80,
+    "autoMarginOffset": 20,
+    "marginTop": 7,
+    "dataProvider": chartData,
+    "valueAxes": [{
+        "axisAlpha": 0.2,
+        "dashLength": 1,
+        "position": "left"
+    }],
+    "mouseWheelZoomEnabled": true,
+    "graphs": [{
+        "id": "g1",
+        "balloonText": "[[value]]",
+        "bullet": "round",
+        "bulletBorderAlpha": 1,
+        "bulletColor": "#FFFFFF",
+        "hideBulletsCount": 50,
+        "title": "red line",
+        "valueField": "visits",
+        "useLineColorForBulletBorder": true,
+        "balloon":{
+            "drop":true
+        }
+    }],
+    "chartScrollbar": {
+        "autoGridCount": true,
+        "graph": "g1",
+        "scrollbarHeight": 40
+    },
+    "chartCursor": {
+        "limitToGraph":"g1"
+    },
+    "categoryField": "date",
+    "categoryAxis": {
+        "parseDates": true,
+        "axisColor": "#DADADA",
+        "dashLength": 1,
+        "minorGridEnabled": true
+    },
+    "export": {
+        "enabled": true
+    }
+});
+
+chart.addListener("rendered", zoomChart);
+zoomChart();
+
+// this method is called when chart is first inited as we listen for "rendered" event
+function zoomChart() {
+    // different zoom methods can be used - zoomToIndexes, zoomToDates, zoomToCategoryValues
+    chart.zoomToIndexes(chartData.length - 40, chartData.length - 1);
+}
+
+// generate some random data, quite different range
+function generateChartData() {
+    var chartData = [];
+    var firstDate = new Date();
+    firstDate.setDate(firstDate.getDate() - 5);
+    var visits = 1200;
+
+    for (var i = 0; i < 1000; i++) {
+        // we create date objects here. In your data, you can have date strings
+        // and then set format of your dates using chart.dataDateFormat property,
+        // however when possible, use date objects, as this will speed up chart rendering.
+        var newDate = new Date(firstDate);
+        newDate.setDate(newDate.getDate() + i);
+        
+        visits += Math.round((Math.random()<0.5?1:-1)*Math.random()*10);
+
+        chartData.push({
+            date: newDate,
+            visits: visits
+        });
+    }
+    return chartData;
+}
+</script>
+
+<script type="text/babel">
+    var Points = React.createClass({
+
+        // intializing state
+        getInitialState: function(){
+            return({
+                points: []
+            });
+        },
+
+        // rander the component
+        render: function(){
+
+            var points = this.state.points;
+            points = points.map(function(point, index){
+                return(
+                    <li key={index}>
+                        <span>{point._id}</span>
+                    </li>
+                )
+            });
+
+            return(
+                <div>
+                    <form id="search" onSubmit={this.handleSubmit}>
+                        <label>Enter Number:</label>
+                        <input type="text" ref="Numberz" placeolder="number" />
+                        <input type="submit" value="find"/>
+                    </form>
+                    <ul>{points}</ul>
+                </div>
+            );
+        },
+
+        // handle submit function
+        handleSubmit: function(e){
+            e.preventDefault();
+            var number = this.refs.Numberz.value;
+            console.log('tsesdkfsdf');
+            console.log(number);
+
+            fetch('api/points_per_time?id=6&level=minute&limit=' + number).then(function(data){
+                return data.json();
+            }).then( json => {
+                this.setState({
+                    points: json
+                })
+            });
+        }
+
+    });
+
+    ReactDOM.render(<Points />, document.getElementById('points'));
+
+</script>
+
+<!-- HTML -->
+<div id="points"></div>
+
+<div id="chartdiv"></div>																	

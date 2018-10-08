@@ -13,7 +13,10 @@ const mongoose = require('mongoose');
 mongoose.connect('mongodb://localhost/ninjago');
 mongoose.Promise = global.Promise;
 
-// get the request body
+// open public sources
+app.use(express.static('public'));
+
+// get the request body for json parse
 app.use(bodyParser.json());
 
 // use routes
@@ -27,5 +30,5 @@ app.use(function(err, req, res, next){
 
 // listen to request in setup port or port 4000
 app.listen(process.env.port || 4000, function(req, res){
-	console.log('hello nodejs world! this is the second one');
+	console.log('diemen world is rocking');
 });
